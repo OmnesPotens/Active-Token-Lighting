@@ -3,6 +3,8 @@ import { ATLUpdate } from "./updateManager.js";
 
 class ATL {
 
+    static DEFAULT_PROPERTIES =  {light: true, height: true, width: true, scale: true, dimSight: true, brightSight: true}
+
     static init() {
         let defaultPresets = [
             {
@@ -289,7 +291,7 @@ class ATL {
                     const detectionModes =
                         getProperty(overrides, "detectionModes") ||
                         getProperty(originals, "detectionModes") ||
-                        [];                    
+                        [];
                     // find the existing one or create a new one
                     let dm = detectionModes.find(dm => dm.id === id);
                     if (!dm) {
@@ -355,8 +357,7 @@ class ATL {
         }
         if (changes.length < 1) overrides = originals
         let updates = duplicate(originals)
-        mergeObject(updates, overrides)
-        if (entity.prototypeToken.randomImg) delete updates.img
+        updates = filterObject(mergeObject(updates, overrides), this.DEFAULT_PROPERTIES)
         let updateMap = tokenArray.map(t => mergeObject({ _id: t.id }, updates))
         await canvas.scene.updateEmbeddedDocuments("Token", updateMap)
     }
